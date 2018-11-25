@@ -1,0 +1,104 @@
+{
+   "runConfigurations":[
+      {
+         "id":"PersonDetection_Cfg01",
+         "name":"PersonDetection Robot",
+         "type":"colcon build",
+         "cfg":{
+            "workingDir":"./PersonDetection/robot_ws",
+            "cmdArgs":""
+         }
+      },
+      {
+         "id":"PersonDetection_Cfg02",
+         "name":"PersonDetection Robot",
+         "type":"colcon bundle",
+         "cfg":{
+            "workingDir":"./PersonDetection/robot_ws",
+            "cmdArgs":""
+         }
+      },
+      {
+         "id":"PersonDetection_Cfg03",
+         "name":"PersonDetection Simulation",
+         "type":"colcon build",
+         "cfg":{
+            "workingDir":"./PersonDetection/simulation_ws",
+            "cmdArgs":""
+         }
+      },
+      {
+         "id":"PersonDetection_Cfg04",
+         "name":"PersonDetection Simulation",
+         "type":"colcon bundle",
+         "cfg":{
+            "workingDir":"./PersonDetection/simulation_ws",
+            "cmdArgs":""
+         }
+      },
+      {
+         "id":"PersonDetection_SimulationJob1",
+         "name":"PersonDetection Small House",
+         "type":"simulation",
+         "cfg":{
+            "robotApp":{
+               "name":"RoboMakerPersonDetectionRobot",
+               "s3Bucket":"<S3 bucket name for your robot bundle>",
+               "sourceBundleFile":"./PersonDetection/robot_ws/bundle/output.tar.gz",
+               "architecture":"X86_64",
+               "robotSoftwareSuite":{
+                  "version":"Kinetic",
+                  "name":"ROS"
+               },
+               "launchConfig":{
+                  "packageName":"person_detection_robot",
+                  "launchFile":"person_detection.launch"
+               }
+            },
+            "simulationApp":{
+               "name":"RoboMakerPersonDetectionSimulation",
+               "s3Bucket":"<S3 bucket name for your simulation bundle>",
+               "sourceBundleFile":"./PersonDetection/simulation_ws/bundle/output.tar.gz",
+               "architecture":"X86_64",
+               "launchConfig":{
+                  "packageName":"person_detection_simulation",
+                  "launchFile":"small_house_turtlebot_navigation.launch",
+                  "environmentVariables":{
+                     "TURTLEBOT3_MODEL":"waffle_pi"
+                  }
+               },
+               "robotSoftwareSuite":{
+                 "name":"ROS",
+                 "version":"Kinetic"
+               },
+               "simulationSoftwareSuite":{
+                  "name":"Gazebo",
+                  "version":"7"
+               },
+               "renderingEngine":{
+                  "name":"OGRE",
+                  "version":"1.x"
+               }
+            },
+            "simulation":{
+               "outputLocation":"<S3 bucket name for job outputs>",
+               "failureBehavior":"Fail",
+               "maxJobDurationInSeconds":28800,
+               "iamRole":"<IAM role ARN for RoboMaker>"
+            }
+         }
+      },
+      {
+         "id":"PersonDetection_wf1",
+         "type":"workflow",
+         "name":"PersonDetection - Build and Bundle All",
+         "runCfgIds":[
+            "PersonDetection_Cfg01",
+            "PersonDetection_Cfg02",
+            "PersonDetection_Cfg03",
+            "PersonDetection_Cfg04"
+         ]
+      }
+   ]
+}
+

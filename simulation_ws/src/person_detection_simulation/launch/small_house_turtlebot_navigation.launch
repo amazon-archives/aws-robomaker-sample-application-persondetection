@@ -1,0 +1,34 @@
+<launch>
+  <!-- 
+        A small house with a Turtlebot navigating to pre-determined 
+        goals in a random order endlessly.
+
+        Note that navigation nodes are in the simulation application 
+        as it uses a virtual map and should not be deployed to 
+        the real robot. 
+  -->
+
+  <!-- If true, will follow a pre-defined route forever -->
+  <arg name="follow_route" default="true"/>
+
+  <!-- 
+       Always set GUI to false for B9 Simulation
+       Use gui:=true on roslaunch command-line to run with a gui.
+  -->
+  <arg name="gui" default="false"/>
+
+  <!-- World and Robot -->
+  <include file="$(find aws_robomaker_simulation_small_house)/launch/small_house_turtlebot_navigation.launch">
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="x_pos" value="3.5"/>
+    <arg name="y_pos" value="1.0"/>
+    <arg name="yaw"   value="0.0"/>
+  </include>
+
+  <!-- Send navigation route goals to the robot in random order -->
+  <group if="$(arg follow_route)">
+    <node pkg="aws_robomaker_simulation_common" type="route_manager" name="route_manager" output="screen">
+      <rosparam file="$(find person_detection_simulation)/routes/route.yaml" command="load"/> 
+    </node>
+  </group>
+</launch>

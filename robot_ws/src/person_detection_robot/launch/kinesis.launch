@@ -1,0 +1,35 @@
+<launch>
+  <!-- AWS region with default -->
+  <arg name="aws_region" value="$(optenv ROS_AWS_REGION us-west-2)" doc="AWS region override, defaults to config .yaml if unset"/>
+
+  <!-- Optional launch ID, if specified, used for suffixing resource names -->
+  <arg name="launch_id" value="$(optenv LAUNCH_ID)" doc="Used for resource name suffix if specified"/>
+
+  <!-- The following allows for parameterization and defaulting to config -->
+  <arg name="stream_name" default="RoboMakerPersonDetectionVideoStream" />
+  <arg name="rekognition_data_stream" default="AmazonRekognitionPersonDetectionStream" />
+
+  <!-- If a stream config file argument is provided by the caller then we will load it into the node's namespace -->
+  <arg name="stream_config" default="$(find person_detection_robot)/config/kvs_config.yaml" />
+
+  <!-- Helper arguments used in multiple places, and not intended to be specified -->
+  <arg name="node_name" default="kinesis_video_streamer" />
+  <arg name="node_namespace" default="kinesis_video/stream0" />
+  <arg name="param_prefix" default="$(arg node_name)/$(arg node_namespace)" />
+
+ <!--Launch encoder node for kinesis video stream-->
+  <node pkg="h264_video_encoder" type="h264_video_encoder" name="h264_video_encoder">
+    <rosparam command="load" file="$(find person_detection_robot)/config/h264_encoder_config.yaml"/>
+    <param name="image_transport" value="raw"/>
+  </node>
+
+  <node name="$(arg node_name)" pkg="kinesis_video_streamer" type="kinesis_video_streamer">
+    <param name="aws_client_configuration/region" value="$(arg aws_region)" />
+    <param name="kinesis_video/log4cplus_config" value="$(find kinesis_video_streamer)/kvs_log_configuration" />
+    <param name="kinesis_video/stream_count" value="1" />
+    <rosparam if="$(eval stream_config!='')" command="load" file="$(arg stream_config)" ns="$(arg node_namespace)" />
+    <rosparam if="$(eval launch_id != '')" param="/$(arg param_prefix)/rekognition_data_stream" subst_value="true">$(arg rekognition_data_stream)-$(arg launch_id)</rosparam>
+    <rosparam if="$(eval launch_id != '')" param="/$(arg param_prefix)/stream_name" subst_value="true">$(arg stream_name)-$(arg launch_id)</rosparam>
+  </node>
+</launch>
+

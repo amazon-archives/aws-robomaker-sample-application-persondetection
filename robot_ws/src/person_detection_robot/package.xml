@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>person_detection_robot</name>
+  <version>1.0.0</version>
+  <description>
+  AWS RoboMaker robot application demonstrating ROS intergration for AWS Rekognition and AWS Polly.
+  </description>
+  <license>MIT</license>
+  <author email="ros-contributions@amazon.com">AWS RoboMaker</author>
+  <maintainer email="ros-contributions@amazon.com">AWS RoboMaker</maintainer>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>cloudwatch_logger</depend>
+  <depend>health_metric_collector</depend>
+  <depend>cloudwatch_metrics_collector</depend>
+  <depend>ros_monitoring_msgs</depend>
+  <depend>kinesis_manager</depend>
+  <depend>kinesis_video_streamer</depend>
+  <depend>kinesis_video_msgs</depend>
+  <depend>h264_encoder_core</depend>
+  <depend>h264_video_encoder</depend>
+  <depend>tts</depend>
+
+  <depend>turtlebot3</depend>
+  <depend>turtlebot3_msgs</depend>
+
+  <build_depend>message_generation</build_depend>
+  <build_export_depend>message_runtime</build_export_depend>
+  <exec_depend>message_runtime</exec_depend>
+</package>

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>person_detection_simulation</name>
+  <version>1.0.0</version>
+  <description>
+    AWS RoboMaker sample application for demonstrating Rekognition by detecting faces.
+  </description>
+  <license>MIT</license>
+  <author email="ros-contributions@amazon.com">AWS RoboMaker</author>
+  <maintainer email="ros-contributions@amazon.com">AWS RoboMaker</maintainer>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>tf</depend>
+  <depend>gazebo_ros</depend>
+  <depend>gazebo_plugins</depend>
+  <depend>turtlebot3_description</depend>
+  <depend>turtlebot3_navigation</depend>
+  <depend>dwa_local_planner</depend>
+  <exec_depend>gazebo</exec_depend>
+
+  <export>
+    <gazebo_ros plugin_path="${prefix}/lib" gazebo_media_path="${prefix}" gazebo_model_path="${prefix}/models"/>
+  </export>
+</package>

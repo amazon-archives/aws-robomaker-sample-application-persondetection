@@ -1,0 +1,11 @@
+<launch>
+  <!-- bringup turtlebot3 -->
+  <include file="$(find turtlebot3_bringup)/launch/turtlebot3_robot.launch"/>
+
+  <!-- deploy person detection system -->
+  <include file="$(find person_detection_robot)/launch/person_detection.launch">
+    <name="use_sim_time" value="false" />
+    <name="use_polly" value="true" />
+  </include>
+</launch>
+

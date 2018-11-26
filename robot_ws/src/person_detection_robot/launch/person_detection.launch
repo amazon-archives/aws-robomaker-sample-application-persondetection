@@ -8,14 +8,16 @@
 
        Note: set to false for deploying to a real robot.
   -->
-
+  <arg name="image_topic" default=""/>
   <arg name="use_sim_time" default="true"/>
   <param name="use_sim_time" value="$(arg use_sim_time)"/>
 
   <!-- Launch the Kinesis Video Stream node 
        See its .launch file for parameterizing AWS region and resource names
    -->
-  <include file="$(find person_detection_robot)/launch/kinesis.launch"/>
+  <include file="$(find person_detection_robot)/launch/kinesis.launch">
+    <param name="image_topic" value="$(arg image_topic)"/>
+  </include>
 
   <!-- Launch node to extract names from Rekognition results. Sends Polly/voice requests. -->
   <node name="rekognize" pkg="person_detection_robot" type="rekognize" output="screen"/>

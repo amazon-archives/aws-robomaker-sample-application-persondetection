@@ -84,7 +84,12 @@
                "outputLocation":"<S3 bucket name for job outputs>",
                "failureBehavior":"Fail",
                "maxJobDurationInSeconds":28800,
-               "iamRole":"<IAM role ARN for RoboMaker>"
+               "iamRole":"<IAM role ARN for RoboMaker>",
+               "vpcConfig": {
+                    "assignPublicIp": true,
+                    "securityGroups": [ "<security group id>" ],
+                    "subnets": [ "<subnet id>" ]
+               }
             }
          }
       },

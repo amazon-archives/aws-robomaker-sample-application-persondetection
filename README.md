@@ -115,8 +115,22 @@ colcon build
 Launch the application with the following commands:
 
 - *Running Robot Application on a Robot*
+
+    Once the bundle has been created, it can be deployed using RoboMaker. For information about deploying using RoboMaker, see [this documentation](https://docs.aws.amazon.com/robomaker/latest/dg/gs-deploy.html).
+
+    You must also complete the Raspberry Pi camera setup for the TurtleBot WafflePi, outlined
+    [here](http://emanual.robotis.com/docs/en/platform/turtlebot3/appendix_raspi_cam/#raspberry-pi-camera).
+
+    You must run the following command before running the Robot Application on the robot.
     ```bash
-    source robot_ws/install/local_setup.sh
+    sudo chmod 777 /dev/video0
+    ```
+
+    You may also upload and run the bundle manually. Once the bundle has been manually uploaded to the target TurtleBot WafflePi, ssh into the TurtleBot and run
+
+    ```bash
+    export BUNDLE_CURRENT_PREFIX=/path/to/bundle/
+    source $BUNDLE_CURRENT_PREFIX/setup.sh
     roslaunch person_detection_robot deploy_person_detection.launch
     ```
 

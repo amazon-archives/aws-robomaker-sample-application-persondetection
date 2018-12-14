@@ -1,6 +1,6 @@
 # An optional metric namespace parameter. If provided it will set the namespace for all metrics provided by this node to
-# the provided value. If the node is running on a B9 system then the provided launch file will ignore this parameter in
-# favor of the namespace specified by the B9 ecosystem
+# the provided value. If the node is running on a AWS RoboMaker system then the provided launch file will ignore this parameter in
+# favor of the namespace specified by the AWS RoboMaker ecosystem
 aws_metrics_namespace: "roboMakerSampleAppCloudWatchRobotMetrics"
 
 # An optional list of topics to listen to. If not provided or is empty the node will just listen on the global "metrics"

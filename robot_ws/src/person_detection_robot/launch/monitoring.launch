@@ -14,9 +14,9 @@
 
   <!-- Enable CloudWatch logging, send /rosout to CW Logs -->
   <arg name="log_group_name" default="robomaker_person_detection_example" />
-  <node pkg="cloudwatch_logger" type="cloudwatch_logger" name="cloudwatch_logger">
-    <rosparam command="load" file="$(find person_detection_robot)/config/cloudwatch_logs_config.yaml" />
-    <rosparam if="$(eval aws_region != '')" param="/cloudwatch_logger/aws_client_configuration/region" subst_value="true">$(arg aws_region)</rosparam>
-    <rosparam if="$(eval launch_id != '')" param="/cloudwatch_logger/log_group_name" subst_value="true">$(arg log_group_name)-$(arg launch_id)</rosparam>
-  </node>
+  <include file="$(find cloudwatch_logger)/launch/cloudwatch_logger.launch">
+    <arg name="config_file" value="$(find person_detection_robot)/config/cloudwatch_logs_config.yaml" />
+  </include>
+  <rosparam if="$(eval aws_region != '')" param="/cloudwatch_logger/aws_client_configuration/region" subst_value="true">$(arg aws_region)</rosparam>
+  <rosparam if="$(eval launch_id != '')" param="/cloudwatch_logger/log_group_name" subst_value="true">$(arg log_group_name)-$(arg launch_id)</rosparam>
 </launch>

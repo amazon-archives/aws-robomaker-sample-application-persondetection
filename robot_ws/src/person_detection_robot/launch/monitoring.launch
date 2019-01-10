@@ -11,12 +11,15 @@
 
   <!-- Optional launch ID, if specified, used for suffixing resource names -->
   <arg name="launch_id" value="$(optenv LAUNCH_ID)" doc="Used for resource name suffix if specified"/>
+  
+  <arg name="node_name" value="cloudwatch_logger"/>
 
   <!-- Enable CloudWatch logging, send /rosout to CW Logs -->
-  <arg name="log_group_name" default="robomaker_person_detection_example" />
+  <arg name="log_group_name" default="robomaker_person_detection_example"/>
   <include file="$(find cloudwatch_logger)/launch/cloudwatch_logger.launch">
-    <arg name="config_file" value="$(find person_detection_robot)/config/cloudwatch_logs_config.yaml" />
+    <arg name="config_file" value="$(find person_detection_robot)/config/cloudwatch_logs_config.yaml"/>
+    <arg name="node_name" value="$(arg node_name)"/>
   </include>
-  <rosparam if="$(eval aws_region != '')" param="/cloudwatch_logger/aws_client_configuration/region" subst_value="true">$(arg aws_region)</rosparam>
-  <rosparam if="$(eval launch_id != '')" param="/cloudwatch_logger/log_group_name" subst_value="true">$(arg log_group_name)-$(arg launch_id)</rosparam>
+  <rosparam if="$(eval aws_region != '')" param="/$(arg node_name)/aws_client_configuration/region" subst_value="true">$(arg aws_region)</rosparam>
+  <rosparam if="$(eval launch_id != '')" param="/$(arg node_name)/log_group_name" subst_value="true">$(arg log_group_name)-$(arg launch_id)</rosparam>
 </launch>

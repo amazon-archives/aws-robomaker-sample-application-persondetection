@@ -20,20 +20,23 @@
   <arg name="node_namespace" default="kinesis_video/stream0" />
   <arg name="param_prefix" default="$(arg node_name)/$(arg node_namespace)" />
 
- <!--Launch encoder node for kinesis video stream-->
-  <node pkg="h264_video_encoder" type="h264_video_encoder" name="h264_video_encoder">
-    <rosparam command="load" file="$(find person_detection_robot)/config/h264_encoder_config.yaml"/>
-    <param name="image_transport" value="raw"/>
-    <rosparam if="$(eval image_topic != '')" param="/$(arg param_prefix)/subscription_topic" subst_value="true">$(arg image_topic)</rosparam>
-  </node>
+  <!--Launch encoder node for kinesis video stream-->
+  <include file="$(find h264_video_encoder)/launch/h264_video_encoder.launch">
+    <arg name="config_file" value="$(find person_detection_robot)/config/h264_encoder_config.yaml"/>
+    <arg name="image_transport" value="raw"/>
+  </include>
 
-  <node name="$(arg node_name)" pkg="kinesis_video_streamer" type="kinesis_video_streamer">
-    <param name="aws_client_configuration/region" value="$(arg aws_region)" />
-    <param name="kinesis_video/log4cplus_config" value="$(find kinesis_video_streamer)/kvs_log_configuration" />
-    <param name="kinesis_video/stream_count" value="1" />
-    <rosparam if="$(eval stream_config!='')" command="load" file="$(arg stream_config)" ns="$(arg node_namespace)" />
-    <rosparam if="$(eval launch_id != '')" param="/$(arg param_prefix)/rekognition_data_stream" subst_value="true">$(arg rekognition_data_stream)-$(arg launch_id)</rosparam>
-    <rosparam if="$(eval launch_id != '')" param="/$(arg param_prefix)/stream_name" subst_value="true">$(arg stream_name)-$(arg launch_id)</rosparam>
-  </node>
+  <include file="$(find kinesis_video_streamer)/launch/kinesis_video_streamer.launch" >
+    <!-- The configuration can either be passed in using the "config_file" parameter or by using a rosparam tag
+            to load the config into the parameter server -->
+    <arg name="node_name" value="$(arg node_name)"/>
+    <arg name="config_file" value="$(arg stream_config)"/>
+  </include>
+  <param name="/kinesis_video_streamer/aws_client_configuration/region" value="$(arg aws_region)" />
+  <param name="/kinesis_video_streamer/kinesis_video/log4cplus_config" value="$(find kinesis_video_streamer)/kvs_log_configuration" />
+  <param name="/kinesis_video_streamer/kinesis_video/stream_count" value="1" />
+  <rosparam if="$(eval image_topic != '')" param="/$(arg param_prefix)/subscription_topic" subst_value="true">$(arg image_topic)</rosparam>
+  <rosparam if="$(eval launch_id != '')" param="/$(arg param_prefix)/rekognition_data_stream" subst_value="true">$(arg rekognition_data_stream)-$(arg launch_id)</rosparam>
+  <rosparam if="$(eval launch_id != '')" param="/$(arg param_prefix)/stream_name" subst_value="true">$(arg stream_name)-$(arg launch_id)</rosparam>
 </launch>
 

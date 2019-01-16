@@ -12,5 +12,5 @@
 - git: {local-name: src/deps/kinesisvideo-common, uri: 'https://github.com/aws-robotics/kinesisvideo-common', version: v1.0.0}
 - git: {local-name: src/deps/kinesisvideo-ros1, uri: 'https://github.com/aws-robotics/kinesisvideo-ros1', version: v1.0.0}
 - git: {local-name: src/deps/kinesisvideo-encoder-common, uri: 'https://github.com/aws-robotics/kinesisvideo-encoder-common', version: v1.0.0}
-- git: {local-name: src/deps/kinesisvideo-encoder-ros1, uri: 'https://github.com/aws-robotics/kinesisvideo-encoder-ros1', version: v1.0.0}
+- git: {local-name: src/deps/kinesisvideo-encoder-ros1, uri: 'https://github.com/aws-robotics/kinesisvideo-encoder-ros1', version: v1.1.0}
 - git: {local-name: src/deps/tts-ros1, uri: 'https://github.com/aws-robotics/tts-ros1', version: v1.0.0}

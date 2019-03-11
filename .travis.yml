@@ -1,33 +1,46 @@
 sudo: required
 language: generic
-dist: xenial
+compiler:
+- gcc
 notifications:
   email:
     on_success: change
     on_failure: always
     recipients:
     - ros-contributions@amazon.com
-    - travis-build@platform-notifications.robomaker.aws.a2z.com
 env:
   matrix:
-  - ROS_DISTRO="kinetic" ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu ROS_CI_DESKTOP="`lsb_release
-    -cs`"
+  - ROS_DISTRO=kinetic ROS_VERSION=1
   global:
   - secure: LLgChre6NXu2cUefhXJ/LLbW7MUrZ5d/fS9M1fjWIAc4kqGyJczihs9W6wSXZF4qYI1Yo4I8PmQPTNnswKFAbsSusPd5v3nqqI/LSGfvPCGs8Z9A3CGtM4WJ/eNngx9HpPfU1vMODLuHM4Y2dYbWfHmottW/JUUX02JmQ/nSSNG5l/8wCptGVA6bRBZQGsxOPC22Yn9I5hvX3Pxs75vs1ej1kexk1x4txAlbGL0+NfjBDw+92+h0qS0ELLZJALnVNefRzvYn6Jb53ehbqhldCJWPX48WToYhb4HEIVwx1GC5WF0K227kFLKRTxycL+ZgOQc6uvRAx8aghHS8ODuRdCzrhuEnFxO24szSfxguZCAoxqNeHos7lh6Glqk2uzgUNG/A1q1pa4cvYSQIyzde3q8j+6daFXQd9EFAzjBsiHDBS8OchnZKBVe1SPbRshrVFXwzIWCiFZP1pm2zmr6cWdFi26DEwZJ3k0Q2a6EPBIgoG9U+SEgzMwzIpj58WBl8dasvR7+GtRZ56C+TSKc6PQd2w8CFXDu9yos/5m14N2avBqHKnsxxfAoCpUhjVZ2nxShRRMkVDosPqL0bTtbb/Y5xs5mQMzB3GOpvsQ5CTzLsPwLo/r+IpfGMvfy3Bwl7mR5f/k5BfsIicT5mjsFYgmctfsMwWvsnv8HX8XoS4bo=
   - secure: UlU+m/MQ+39MO5XRkd7bPcVkv3txF1ny5MxfETErmGOazJLssz6aJMX5qg4sB2K42lrJyMnAHADLMF8ZwavXNm5LzvVjeQUiWl+scvh6CvSWwQKq5sVKVhtYQsfJr5HV1oDYOcSsuKI3WYIpRJ8bqjBVIBo5JWdpJFjoV/ts2hPPFiQen+G+u4o6kF0lCaK7JKKfhfANI36lrpzHVWQRnbK9QoFGkVUUN6exlSdhXrgPfDOPAKr6N7YyHsKcq+vIzvAvwIRty7tzu4IrpdDg9VADWRSxflr1axLhunuoLU5HNuaAr8+pnA64dLGnQl/ZOjOzfIkrWMoXLX0NFU7gxbXu31Jxs4LPaovdQZA7wATOXrgBvG7w7AXDDPBW2cuW6bcknYioi1FIFRau/HqRtdx9jyYUuF0uCIdL2kgkJlMbt/2alhGJCMuJipjQSrYA5IjHg6uJtgOsouk32vF6+Kti+wQis/YIb5kRikr8TrOiIZQenaJVw+cnYMtR86Y4btFFWXq+AL9e4xJJFzazerLMtt8uN8bx0SQ9Qp4GQMiWir+UHtX9Cflxb8Bg9+hlV8NF77AkJL4q8nzGrY4lqX9/gFVk8r1drPir8cyuxHEcDWW1wiQqBgdilGP68JJOtK4MTyc8bHrDtuentolxdF+q4P0OYaQvumzgtJ42Cx8=
+  - SA_NAME=person-detection
+  - SA_PACKAGE_NAME=person_detection_robot
+  - NO_TEST=true
+  - GH_USER_NAME="travis-ci"
+  - GH_USER_EMAIL="travis@travis-ci.org"
+  - AWS_DEFAULT_REGION=us-west-2
 before_install:
+- pip install --user awscli
 - openssl aes-256-cbc -K $encrypted_13642953d095_key -iv $encrypted_13642953d095_iv
   -in github_deploy.pem.enc -out ../github_deploy.pem -d
-- sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu $ROS_CI_DESKTOP main\"
-  > /etc/apt/sources.list.d/ros-latest.list"
-- sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
-- sudo apt-get update -qq
-- sudo apt-get install dpkg
-- sh -c "echo $ROS_CI_DESKTOP"
-- sudo apt-get install -y python-catkin-pkg python-rosdep python-wstool ros-$ROS_DISTRO-ros-base
-- source /opt/ros/$ROS_DISTRO/setup.bash
-- sudo rosdep init
 install:
-- sudo make setup
+- git clone https://github.com/aws-robotics/travis-scripts.git .ros_ci
 script:
-- make build
+- . .ros_ci/add_tag.sh
+- .ros_ci/ce_build.sh
+before_deploy:
+- . .ros_ci/before_deploy.sh
+deploy:
+  provider: s3
+  access_key_id: "$AWS_ACCESS_KEY_ID"
+  secret_access_key: "$AWS_SECRET_ACCESS_KEY"
+  bucket: "$S3_BUCKET_NAME"
+  local_dir: shared
+  skip_cleanup: true
+  wait-until-deployed: true
+  on:
+    branch: master
+  upload-dir: travis/$SA_NAME
+after_deploy:
+- .ros_ci/post_deploy.sh

@@ -44,7 +44,7 @@
             "robotApp":{
                "name":"RoboMakerPersonDetectionRobot",
                "s3Bucket":"<S3 bucket name for your robot bundle>",
-               "sourceBundleFile":"./PersonDetection/robot_ws/bundle/output.tar.gz",
+               "sourceBundleFile":"./PersonDetection/robot_ws/bundle/output.tar",
                "architecture":"X86_64",
                "robotSoftwareSuite":{
                   "version":"Kinetic",
@@ -58,7 +58,7 @@
             "simulationApp":{
                "name":"RoboMakerPersonDetectionSimulation",
                "s3Bucket":"<S3 bucket name for your simulation bundle>",
-               "sourceBundleFile":"./PersonDetection/simulation_ws/bundle/output.tar.gz",
+               "sourceBundleFile":"./PersonDetection/simulation_ws/bundle/output.tar",
                "architecture":"X86_64",
                "launchConfig":{
                   "packageName":"person_detection_simulation",

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>person_detection_robot</name>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <description>
   AWS RoboMaker robot application demonstrating ROS intergration for AWS Rekognition and AWS Polly.
   </description>

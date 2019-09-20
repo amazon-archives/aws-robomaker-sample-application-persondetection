@@ -23,7 +23,7 @@ env:
   - AWS_DEFAULT_REGION=us-west-2
 before_install:
 - pip install --user awscli
-- openssl aes-256-cbc -K $encrypted_13642953d095_key -iv $encrypted_13642953d095_iv
+  # - openssl aes-256-cbc -K $encrypted_13642953d095_key -iv $encrypted_13642953d095_iv
   -in github_deploy.pem.enc -out github_deploy.pem -d
 install:
 - git clone https://github.com/aws-robotics/travis-scripts.git .ros_ci

@@ -15,15 +15,17 @@
 
 """Launch turtlebot3_description_reduced_mesh and a rotate node."""
 
-import subprocess
 import os
 import sys
-import launch
-import launch.actions
-from launch_ros import get_default_launch_description
-from ament_index_python.packages import get_package_share_directory
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))  # noqa
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'launch'))  # noqa
+
+import launch
+from launch_ros import get_default_launch_description
+import launch.actions
+
+from ament_index_python.packages import get_package_share_directory
+import subprocess
 
 def generate_launch_description():
     """Main."""
@@ -48,9 +50,10 @@ def generate_launch_description():
         output='screen'
     )
 
-    ld = launch.LaunchDescription(
-        [use_sim_time_false,
-         spawn_robot_waffle_pi])
+    ld = launch.LaunchDescription([
+        use_sim_time_false,
+        spawn_robot_waffle_pi
+        ])
     return ld
 
 if __name__ == '__main__':

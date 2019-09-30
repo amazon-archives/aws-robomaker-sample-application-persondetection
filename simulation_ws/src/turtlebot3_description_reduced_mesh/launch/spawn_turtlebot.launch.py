@@ -15,14 +15,11 @@
 
 """Launch turtlebot3_description_reduced_mesh and a rotate node."""
 
-import tempfile
 import subprocess
 import os
 import sys
-import xacro
-import lifecycle_msgs.msg
 import launch
-import launch_ros.actions
+import launch.actions
 from launch_ros import get_default_launch_description
 from ament_index_python.packages import get_package_share_directory
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))  # noqa
@@ -37,7 +34,6 @@ def generate_launch_description():
         )
 
     turtlebot3_model_waffle_pi = os.environ.get('TURTLEBOT3_MODEL', 'waffle_pi')
-    #turtlebot3_model_waffle_pi = 'waffle_pi'
     turtlebot3_location_waffle_pi = get_package_share_directory('turtlebot3_description_reduced_mesh') \
         + '/urdf/turtlebot3_' + turtlebot3_model_waffle_pi + '.urdf.xacro'
     with subprocess.Popen(['ros2', 'run', 'xacro', 'xacro', turtlebot3_location_waffle_pi], stdout=subprocess.PIPE) as proc:

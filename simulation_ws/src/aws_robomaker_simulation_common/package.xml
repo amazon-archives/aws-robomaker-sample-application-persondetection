@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>aws_robomaker_simulation_common</name>
   <version>1.0.0</version>
   <description>
@@ -8,16 +8,10 @@
   <license>Apache 2.0</license>
   <author email="ros-contributions@amazon.com">AWS RoboMaker</author>
   <maintainer email="ros-contributions@amazon.com">AWS RoboMaker</maintainer>
-  <buildtool_depend>catkin</buildtool_depend>
-  <exec_depend>gazebo_ros</exec_depend>
-  <exec_depend>gazebo</exec_depend>
-  <exec_depend>gazebo_plugins</exec_depend>
-
-  <!-- Route Manager -->
-  <exec_depend>moveit_ros</exec_depend>
-  <exec_depend>dwa_local_planner</exec_depend>
+  <depend>rclpy</depend>
+  <depend>python3-yaml</depend>
 
   <export>
-    <gazebo_ros plugin_path="${prefix}/lib" gazebo_media_path="${prefix}" gazebo_model_path="${prefix}/models"/>
+    <build_type>ament_python</build_type>  
   </export>
 </package>

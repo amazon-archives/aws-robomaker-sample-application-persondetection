@@ -29,7 +29,7 @@ install:
 script:
 - ". .ros_ci/add_tag.sh"
 - while sleep 9m; do echo "=====[ $SECONDS seconds still running ]====="; done &
-- .ros_ci/ce_build.sh
+- ".ros_ci/ce_build.sh"
 - kill %1
 before_deploy:
-- . .ros_ci/before_deploy.sh
+- ". .ros_ci/before_deploy.sh"

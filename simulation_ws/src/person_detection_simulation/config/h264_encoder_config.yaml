@@ -10,7 +10,7 @@ h264_video_encoder:
     publication_topic: "/video/encoded"
 
     # The size of the subscribed and publishing message queues (default: 100)
-    queue_size: 100
+    # queue_size: 100
 
     # The desired output width of the encoded video stream (default: width of the input image stream)
     # output_width:

@@ -52,6 +52,10 @@ def generate_launch_description():
         default_value='false',
         description='Argument for display on GUI')
 
+    x_pos = launch.substitutions.LaunchConfiguration('x_pos', default='3.5')
+    y_pos = launch.substitutions.LaunchConfiguration('y_pos', default='1.0')
+    yaw = launch.substitutions.LaunchConfiguration('yaw', default='0.0')
+
     ###########################
     ##  Create World Launch  ##
     ###########################
@@ -62,7 +66,13 @@ def generate_launch_description():
             os.path.join(
                 aws_robomaker_small_house_world_dir,
                 'launch',
-                'small_house_turtlebot_navigation.launch.py')))
+                'small_house_turtlebot_navigation.launch.py')),
+        launch_arguments={
+                'x_pos': x_pos,
+                'y_pos': y_pos,
+                'yaw': yaw
+            }.items()
+        )
 
     ###################################
     ##          Route Node           ##

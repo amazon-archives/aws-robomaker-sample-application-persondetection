@@ -24,39 +24,36 @@ import os
 import sys
 
 import launch
-from launch.actions import IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
+import launch_ros.actions
 from ament_index_python.packages import get_package_share_directory
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))  # noqa
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'launch'))  # noqa
-
 def generate_launch_description():
-   
-    gui = launch.actions.DeclareLaunchArgument(
-        'gui',
-        default_value='false',
-        description='Argument for display on GUI')
-
-    ###########################
-    ##  Create World Launch  ##
-    ###########################
-    aws_robomaker_small_house_world_dir = get_package_share_directory(
-        'aws_robomaker_small_house_world')
-    small_house = launch.actions.IncludeLaunchDescription(
-        launch.launch_description_sources.PythonLaunchDescriptionSource(
-            os.path.join(
-                aws_robomaker_small_house_world_dir,
-                'launch',
-                'small_house.launch.py')))
-
-    ########################
-    ##  Launch Evalution  ##
-    ########################
     ld = launch.LaunchDescription([
-        gui,
-        small_house
-        ])
+        launch.actions.DeclareLaunchArgument(
+            name='gui',
+            default_value='false'
+        ),
+        launch.actions.IncludeLaunchDescription(
+            launch.launch_description_sources.PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory(
+                    'aws_robomaker_small_house_world'), 'launch', 'small_house.launch.py')
+            ),
+            launch_arguments={
+                'gui': launch.substitutions.LaunchConfiguration('gui')
+            }.items()
+        ),
+        launch.actions.IncludeLaunchDescription(
+            launch.launch_description_sources.PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory(
+                    'turtlebot3_description_reduced_mesh'), 'launch', 'spawn_turtlebot.launch.py')
+            ),
+            launch_arguments={
+                'x_pos': '3.5',
+                'y_pos': '1.0',
+                'z_pos': '0.0'
+            }.items()
+        )
+    ])
     return ld
 
 

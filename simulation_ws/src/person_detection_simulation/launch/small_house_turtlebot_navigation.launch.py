@@ -24,85 +24,111 @@ import os
 import sys
 
 import launch
-from launch.actions import IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
+import launch_ros.actions
 from ament_index_python.packages import get_package_share_directory
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))  # noqa
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'launch'))  # noqa
+TURTLEBOT3_MODEL = os.environ.get('TURTLEBOT3_MODEL', 'burger')
 
 def generate_launch_description():
+    turtlebot_urdf_file_name = 'turtlebot3_' + TURTLEBOT3_MODEL + '.urdf'
+    turtlebot_urdf_file_path = os.path.join(get_package_share_directory('turtlebot3_description_reduced_mesh'), 'urdf', turtlebot_urdf_file_name)
 
-    ########################
-    ##  Evalution Worker  ##
-    ########################
-    person_detection_dir = get_package_share_directory('person_detection_simulation')
-    person_detection_launch_dir = os.path.join(person_detection_dir, 'launch')
-
-    #############################
-    ##  follow_route Argument  ##
-    #############################
-    follow_route = launch.actions.DeclareLaunchArgument(
-        'follow_route',
-        default_value='true',
-        description='Argument for follow pre-defined route forever')
-
-    gui = launch.actions.DeclareLaunchArgument(
-        'gui',
-        default_value='false',
-        description='Argument for display on GUI')
-
-    x_pos = launch.substitutions.LaunchConfiguration('x_pos', default='3.5')
-    y_pos = launch.substitutions.LaunchConfiguration('y_pos', default='1.0')
-    yaw = launch.substitutions.LaunchConfiguration('yaw', default='0.0')
-
-    ###########################
-    ##  Create World Launch  ##
-    ###########################
-    aws_robomaker_small_house_world_dir = get_package_share_directory(
-        'aws_robomaker_small_house_world')
-    small_house_turtlebot_navigation_launch = launch.actions.IncludeLaunchDescription(
-        launch.launch_description_sources.PythonLaunchDescriptionSource(
-            os.path.join(
-                aws_robomaker_small_house_world_dir,
-                'launch',
-                'small_house_turtlebot_navigation.launch.py')),
-        launch_arguments={
-                'x_pos': x_pos,
-                'y_pos': y_pos,
-                'yaw': yaw
-            }.items()
-        )
-
-    ###################################
-    ##          Route Node           ##
-    ###################################
-    route_manager = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(person_detection_launch_dir, 'route_manager.launch.py')))
-
-    ##############################################
-    ##  H264 Video Encoding and Kinesis Nodes   ##
-    ##############################################
-    kinesis_node = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(person_detection_launch_dir, 'kinesis.launch.py')))
-
-    monitoring_node = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(person_detection_launch_dir, 'monitoring.launch.py')))
-
-    ########################
-    ##  Launch Evalution  ##
-    ########################
     ld = launch.LaunchDescription([
-        gui,
-        follow_route,
-        small_house_turtlebot_navigation_launch,
-        kinesis_node,
-        monitoring_node,
-        route_manager
-        ])
+        launch.actions.DeclareLaunchArgument(
+            name='x_pos',
+            default_value='3.5'
+        ),
+        launch.actions.DeclareLaunchArgument(
+            name='y_pos',
+            default_value='1.0'
+        ),
+        launch.actions.DeclareLaunchArgument(
+            name='z_pos',
+            default_value='0.0'
+        ),
+        launch.actions.DeclareLaunchArgument(
+            name='yaw',
+            default_value='0.0'
+        ),
+        launch.actions.DeclareLaunchArgument(
+            name='gui',
+            default_value='false'
+        ),
+        launch.actions.DeclareLaunchArgument(
+            name='follow_route',
+            default_value='true'
+        ),
+        launch.actions.DeclareLaunchArgument(
+            name='use_sim_time',
+            default_value='true'
+        ),
+        launch.actions.IncludeLaunchDescription(
+            launch.launch_description_sources.PythonLaunchDescriptionSource(
+                os.path.join(
+                    get_package_share_directory('person_detection_simulation'), 
+                    'launch', 
+                    'small_house.launch.py'
+                )
+            ),
+            launch_arguments={
+                'gui': launch.substitutions.LaunchConfiguration('gui'),
+                'gazebo_model_path': os.path.split(get_package_share_directory('turtlebot3_description_reduced_mesh'))[0],
+            }.items()
+        ),
+        launch.actions.IncludeLaunchDescription(
+            launch.launch_description_sources.PythonLaunchDescriptionSource(
+                os.path.join(
+                    get_package_share_directory('turtlebot3_bringup'),
+                    'launch',
+                    'turtlebot3_state_publisher.launch.py'
+                )
+            ),
+            launch_arguments={'use_sim_time': launch.substitutions.LaunchConfiguration('use_sim_time')}.items()
+        ),
+        launch.actions.IncludeLaunchDescription(
+            launch.launch_description_sources.PythonLaunchDescriptionSource(
+                os.path.join(
+                    get_package_share_directory('person_detection_simulation'), 
+                    'launch', 
+                    'turtlebot3_navigation.launch.py'
+                )
+            ),
+            launch_arguments={
+                ## map_file path is set in turtlebot3_navigation.launch.py as '/tmp/maps' instead of "<package_name>.<relative path in install space>" due to limitations on string parameter size. 
+                #'map_file': os.path.join(get_package_share_directory('person_detection_simulation'), 'maps', 'map.yaml'),
+                'params': os.path.join(get_package_share_directory('person_detection_simulation'), 'param', TURTLEBOT3_MODEL + ".yaml"),
+                'use_sim_time': launch.substitutions.LaunchConfiguration('use_sim_time')
+            }.items()
+        ),
+        launch_ros.actions.Node(
+            package='aws_robomaker_simulation_common',
+            node_executable='route_manager',
+            node_name='route_manager',
+            output='screen',
+            parameters=[{
+                # Route file is passed as "<package_name>.<relative path in install space>" due to limitations on string parameter size.
+                'route_file': '.'.join(['person_detection_simulation', os.path.join('routes', 'route.yaml')])
+            }],
+            condition=launch.conditions.IfCondition(
+                launch.substitutions.LaunchConfiguration('follow_route'))
+        ),
+        launch.actions.IncludeLaunchDescription(
+            launch.launch_description_sources.PythonLaunchDescriptionSource(
+                os.path.join(
+                    get_package_share_directory('person_detection_simulation'),
+                    'launch',
+                    'kinesis.launch.py'
+                )
+            )
+        ),
+        launch.actions.IncludeLaunchDescription(
+            launch.launch_description_sources.PythonLaunchDescriptionSource(
+                os.path.join(
+                    get_package_share_directory('person_detection_simulation'),
+                    'launch',
+                    'monitoring.launch.py'
+                )
+    ])
     return ld
 
 

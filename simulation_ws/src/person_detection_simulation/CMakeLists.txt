@@ -7,7 +7,7 @@ find_package(kinesis_video_msgs REQUIRED)
 find_package(h264_video_encoder REQUIRED)
 find_package(health_metric_collector REQUIRED)
 
-install(DIRECTORY launch routes config 
+install(DIRECTORY launch routes config param
   DESTINATION share/${PROJECT_NAME}
 )
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -16,58 +16,69 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-
 import json
 
-import rospy
-import actionlib
-from std_msgs.msg import String
+import rclpy
+from rclpy.node import Node
 
-class Rekognizer:
+from tts_interfaces.srv import Synthesizer
+from std_msgs.msg import String
+from tts.voicer import Voicer
+
+class Rekognizer(Node):
 
     def __init__(self, rekognition_topic="/rekognition/results"):
-
+        super().__init__('rekognize_tts')
         #Listen for rekognition results
-        self.rekognition_subscriber = rospy.Subscriber(rekognition_topic, String, self.rekognize_callback)
+        self.rekognition_subscriber = self.create_subscription(String,
+                                                               rekognition_topic,
+                                                               self.rekognize_callback,
+                                                               10)
+        #Action client for Polly
+        self.synthesizer = self.create_client(Synthesizer, 'synthesizer')
+        self.voicer = Voicer()
 
-        #Publish names extraced from rekognition results
-        self.output_publisher = rospy.Publisher("/rekognized_people", String)
+    def speak(self):
+        self.voicer.req = Synthesizer.Request()
+        self.voicer.req.text = "I see {}".format(self.names)
+
+        while not self.synthesizer.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warn('service not available, waiting again...')
+
+        future = self.synthesizer.call_async(self.voicer.req)
+        future.add_done_callback(self.voicer.on_synthesize_done)
 
     def rekognize_callback(self, msg):
         image_ids = []
         try:
             msg = json.loads(msg.data)
             if msg["FaceSearchResponse"]:
-                rospy.logdebug("Rekognition result has FaceSeachResponse, looking for matched faces")
+                self.get_logger().debug("Rekognition result has FaceSeachResponse, looking for matched faces")
                 for face in msg['FaceSearchResponse'][0]['MatchedFaces']:
-                    rospy.logdebug("Matched face: %s", face)
+                    self.get_logger().debug(f"Matched face: {face}")
                     # Default 'unnamed' is required for indexed images without ExternalImageId
                     name = face['Face'].get('ExternalImageId', 'unknown')
-                    rospy.logdebug("Matched face has name: %s", name)
+                    self.get_logger().debug(f"Matched face has name: {name}")
                     image_ids.append(name)
             else:
                 return
         except ValueError as e:
-            rospy.logerr("Error loading json message from rekognition:\n%s", e)
+            self.get_logger().error(f"Error loading json message from rekognition:\n{e}")
             return
 
         if not image_ids:
-            rospy.loginfo("Rekognition result has no faces")
-            return 
+            self.get_logger().info('Rekognition result has no faces')
+            return
 
-        names =" and ".join([image_id.replace("_"," ") for image_id in image_ids])
-        text = "I see {}".format(names)
-        self.output_publisher.publish(text)
-        rospy.loginfo(text)
+        self.names = " and ".join([image_id.replace("_", " ") for image_id in image_ids])
+        self.speak()
 
-
-def main():
-    rospy.init_node("rekognize", log_level=rospy.INFO)
-    
+def main(args=None):
+    rclpy.init(args=args)
     rekognizer = Rekognizer()
-    
-    rospy.spin()
-
+    rclpy.spin(rekognizer)
+    rekognizer.destroy_node()
+    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

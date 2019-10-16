@@ -20,6 +20,7 @@
   <depend>health_metric_collector</depend>  
   <exec_depend>turtlebot3_description_reduced_mesh</exec_depend>
   <exec_depend>turtlebot3_navigation2</exec_depend>
+  <exec_depend>turtlebot3_bringup</exec_depend>
   <export>
     <build_type>ament_cmake</build_type>
   </export>

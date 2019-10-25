@@ -8,6 +8,7 @@
   <license>MIT</license>
   <author email="ros-contributions@amazon.com">AWS RoboMaker</author>
   <maintainer email="ros-contributions@amazon.com">AWS RoboMaker</maintainer>
+
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
@@ -21,6 +22,7 @@
   <depend>h264_encoder_core</depend>
   <depend>h264_video_encoder</depend>
   <depend>health_metric_collector</depend>
+  <depend>image_tools</depend>
   <depend>tts</depend>
   <depend>tts_interfaces</depend>
 

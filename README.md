@@ -13,7 +13,7 @@ _RoboMaker sample applications include third-party software licensed under open-
 
 ## Requirements
 
-- [ROS Kinetic](http://wiki.ros.org/kinetic/Installation/Ubuntu) / [ROS Melodic](http://wiki.ros.org/melodic/Installation/Ubuntu) - Other versions may work, however they have not been tested
+- [ROS Dashing](https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Debians/)- Other versions may work, however they have not been tested
 - [Colcon](https://colcon.readthedocs.io/en/released/user/installation.html) - Used for building and bundling the application. 
 
 ## AWS Account Setup
@@ -42,25 +42,25 @@ aws s3 cp path/to/image s3://<physical_id>/photos/persons_name.png
 ```
 
 If you'd like more detailed control over the resources follow the instructions here: https://docs.aws.amazon.com/rekognition/latest/dg/recognize-faces-in-a-video-stream.html.
-Make sure that the names of the Kinesis video stream and data stream match those in src/person_detection_robot/launch/kinesis.launch.
+Make sure that the names of the Kinesis video stream and data stream match those in `src/person_detection_robot/config/kvs_config.yaml`.
 
 ### Permissions
   
 To publish to Amazon CloudWatch Metrics and Logs the IAM user configured in the environment in which the node is running
 will need the following permissions:
- ```
-   logs:PutLogEvents
-   logs:DescribeLogStreams 
-   logs:CreateLogStream 
-   logs:CreateLogGroup
-```
-For more information about the CloudWatch Metrics node see here: https://github.com/aws-robotics/cloudwatchmetrics-ros1
+  ```
+  logs:PutLogEvents
+  logs:DescribeLogStreams 
+  logs:CreateLogStream 
+  logs:CreateLogGroup
+  ```
+For more information about the CloudWatch Metrics node see here: https://github.com/aws-robotics/cloudwatchmetrics-ros2
 
-For more information about the CloudWatch Logs node see here: https://github.com/aws-robotics/cloudwatchlogs-ros1
+For more information about the CloudWatch Logs node see here: https://github.com/aws-robotics/cloudwatchlogs-ros2
 
 
 To use the Kinesis node you will need an IAM user with the following permissions:
- ```
+  ```
   kinesisvideo:CreateStream
   kinesisvideo:TagStream
   kinesisvideo:DescribeStream
@@ -70,13 +70,13 @@ To use the Kinesis node you will need an IAM user with the following permissions
   kinesis:GetShardIterator
   kinesis:GetRecords
   ```
-For more information on the Amazon Kinesis node see here: https://github.com/aws-robotics/kinesisvideo-ros1  
+For more information on the Amazon Kinesis node see here: https://github.com/aws-robotics/kinesisvideo-ros2
 
 To use the Polly node you will need an IAM user with the following permissions:
-```
+  ```
   polly:SynthesizeSpeech
-```
- For more information on the Amazon Polly node see here https://github.com/aws-robotics/tts-ros1
+  ```
+For more information on the Amazon Polly node see here https://github.com/aws-robotics/tts-ros2
   
 Information about attaching permissions to an IAM user can be found here: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_change-permissions.html
 
@@ -125,7 +125,7 @@ Launch the application with the following commands:
 
     You must run the following command before running the Robot Application on the robot.
     ```bash
-    sudo chmod 777 /dev/video0
+    sudo chmod 666 /dev/video0
     ```
 
     You may also upload and run the bundle manually. Once the bundle has been manually uploaded to the target TurtleBot WafflePi, ssh into the TurtleBot and run
@@ -137,28 +137,29 @@ Launch the application with the following commands:
     export LAUNCH_ID=YOUR_LAUNCH_ID
     BUNDLE_CURRENT_PREFIX=$(pwd)/dependencies source $(pwd)/dependencies/setup.sh
     BUNDLE_CURRENT_PREFIX=$(pwd)/workspace source $(pwd)/workspace/setup.sh
-    roslaunch person_detection_robot deploy_person_detection.launch
+    ros2 launch person_detection_robot deploy_person_detection.launch.py
     ```
 
     See the [colcon-bundle documentation](https://github.com/colcon/colcon-bundle#bundle-usage) for more details.
 
-    Finally, note the `width` and `height` parameters for the node `raspicam_node` on `deploy_person_detection.launch` might require
+    Finally, note the `width` and `height` parameters for the node `raspicam_node` on `deploy_person_detection.launch.py` might require
     some adjustment depending on the resolution of the specific robot camera.
 
 - *Running Robot Application Elsewhere*
     ```bash
     source robot_ws/install/local_setup.sh
-    roslaunch person_detection_robot person_detection.launch
+    ros2 launch person_detection_robot person_detection.launch.py
     ```
 
 - *Running Simulation Application*
     ```bash
+    source /usr/share/gazebo/setup.sh
     source simulation_ws/install/local_setup.sh
-    TURTLEBOT3_MODEL=waffle_pi roslaunch person_detection_simulation [command]
+    TURTLEBOT3_MODEL=waffle_pi ros2 launch person_detection_simulation [command]
     ```
     There are two simulation launch commands:
-    - `small_house.launch` - A world with a kitchen, bedroom and living areas. The Turtlebot3 spawned is stationary waiting commands.
-    - `small_house_turtlebot_navigation.launch` - A small house with TB3 autonomously navigating to goal points on a route.
+    - `small_house.launch.py` - A world with a kitchen, bedroom and living areas. The Turtlebot3 spawned is stationary waiting commands.
+    - `small_house_turtlebot_navigation.launch.py` - A small house with TB3 autonomously navigating to goal points on a route.
 
 ## Using this sample with RoboMaker
 
@@ -195,17 +196,17 @@ and [create a simulation job](https://docs.aws.amazon.com/robomaker/create-simul
 ## AWS ROS Packages used by this Sample
 
 - RoboMakerUtils-Common
-- RobomakerUtils-ROS1
+- RobomakerUtils-ROS2
 - CloudWatch-Common
-- CloudWatchLogs-ROS1
-- CloudWatchMetrics-ROS1
-- HealthMetricsCollector-ROS1
+- CloudWatchLogs-ROS2
+- CloudWatchMetrics-ROS2
+- HealthMetricsCollector-ROS2
 - KinesisVideo-Common
-- KinesisVideo-ROS1
+- KinesisVideo-ROS2
 - KinesisVideoEncoder-Common
-- KinesisVideoEncoder-ROS1
-- MonitoringMessages-ROS1
-- TTS-ROS1
+- KinesisVideoEncoder-ROS2
+- MonitoringMessages-ROS2
+- TTS-ROS2
 
 
 ## License
@@ -215,5 +216,3 @@ MIT-0 - See LICENSE.txt for further information
 ## How to Contribute
 
 Create issues and pull requests against this Repository on Github
-
-
